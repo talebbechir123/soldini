@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Soldini : rapprochement quotidien et détection de fraude pour les agents mobile money indépendants.">
+<title>Soldini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Committed single look: light page, deep-green bands, mint accent, big rounded cards */
+:root{
+  color-scheme:light;
+  --bg:#F5F7F4; --white:#FFFFFF; --ink:#0B1F17; --muted:#56675F; --line:#E1E7E2;
+  --deep:#0B1F17; --deep2:#12301F; --mint:#3DDC97; --mint-soft:#D9F7E8; --mint-ink:#0E7A4D;
+  --on-deep:#EAF3EE; --on-deep-muted:#9DB5A9;
+  --red:#D9452B; --red-soft:#FBE3DD; --amber:#C98A0B; --amber-soft:#FCEFD0;
+  --head:"Inter Tight", "Segoe UI", system-ui, sans-serif;
+  --text:"Inter", system-ui, -apple-system, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:24px;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--text)}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--head);margin:0;text-wrap:balance;letter-spacing:-.025em}
+h2{font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.04;font-weight:800}
+h3{font-size:1.35rem;line-height:1.2;font-weight:700}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:999px;font:600 1rem var(--text);text-decoration:none;border:0;cursor:pointer;transition:transform .15s ease}
+.pill:hover{transform:translateY(-1px)}
+.pill:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.pill.mint{background:var(--mint);color:var(--deep)}
+.pill.dark{background:var(--deep);color:#fff}
+.pill.line{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.arrow{font-size:1.1em;line-height:1}
+.kicker{display:inline-block;font:600 .85rem var(--text);color:var(--mint-ink);background:var(--mint-soft);padding:6px 14px;border-radius:999px}
+section{padding-block:96px}
+.sec-head{max-width:760px;display:flex;flex-direction:column;gap:18px;margin-bottom:56px}
+.sec-head p{color:var(--muted);font-size:1.15rem;max-width:60ch}
+.center{text-align:center;align-items:center;margin-inline:auto}
+
+/* nav */
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:22px}
+.brand{display:flex;align-items:center;gap:10px;font:800 1.35rem var(--head);letter-spacing:-.03em;color:var(--ink);text-decoration:none}
+.logo{width:32px;height:32px;border-radius:10px;background:var(--deep);display:grid;place-items:center}
+.logo i{width:14px;height:8px;border-left:3px solid var(--mint);border-bottom:3px solid var(--mint);transform:rotate(-45deg) translate(1px,-2px)}
+.links{display:flex;gap:30px}
+.links a{color:var(--ink);text-decoration:none;font-weight:500}
+.links a:hover{color:var(--mint-ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding-block:48px 96px}
+.hero > *{min-width:0}
+.hero h1{font-size:clamp(2.8rem,7vw,5.4rem);line-height:.98;font-weight:800;letter-spacing:-.04em}
+.hero h1 span{color:var(--mint-ink)}
+.hero .sub{margin-top:26px;font-size:1.2rem;color:var(--muted);max-width:52ch}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+.trust{margin-top:34px;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.92rem;flex-wrap:wrap}
+.trust b{color:var(--ink)}
+
+/* visual */
+.stage{position:relative;background:var(--deep);border-radius:32px;aspect-ratio:1/1.02;max-width:100%;overflow:hidden;display:grid;place-items:center}
+.stage::before{content:"";position:absolute;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#3DDC9755 0%,#3DDC9700 70%);top:8%;left:15%}
+.phone{position:relative;width:min(58%,270px);aspect-ratio:9/18.5;background:#fff;border-radius:38px;border:9px solid #050F0B;box-shadow:0 30px 60px -20px #000c;display:flex;flex-direction:column;padding:26px 16px 16px;gap:12px;transform:translateX(-14%)}
+.phone .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:70px;height:18px;background:#050F0B;border-radius:10px}
+.phone .ph-t{font:700 .95rem var(--head);margin-top:6px}
+.phone .ph-s{font-size:.7rem;color:var(--muted);margin-top:-8px}
+.field{border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--muted)}
+.field b{font:700 .9rem var(--head);color:var(--ink)}
+.field.on{border-color:var(--mint)}
+.ph-btn{margin-top:auto;background:var(--deep);color:#fff;text-align:center;border-radius:999px;padding:10px;font:600 .78rem var(--text)}
+.ph-note{font-size:.62rem;color:var(--muted);text-align:center}
+.float{position:absolute;background:#fff;border-radius:18px;box-shadow:0 24px 48px -18px #000a;padding:16px 18px}
+.f1{right:5%;top:12%;width:min(48%,230px)}
+.f1 .lbl{font-size:.72rem;color:var(--muted)}
+.f1 .v{font:800 1.5rem var(--head);color:var(--red);letter-spacing:-.02em;margin-top:2px}
+.f1 .bar{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:10px}
+.f1 .bar i{height:14px;border-radius:3px;background:var(--mint)}
+.f1 .bar i.r{background:var(--red)} .f1 .bar i.a{background:var(--amber)}
+.f2{right:7%;bottom:12%;width:min(50%,240px);display:flex;gap:12px;align-items:flex-start}
+.f2 .dot{flex:none;width:34px;height:34px;border-radius:10px;background:var(--amber-soft);display:grid;place-items:center;color:var(--amber);font:800 1rem var(--head)}
+.f2 b{display:block;font:700 .85rem var(--head)}
+.f2 span{font-size:.72rem;color:var(--muted);line-height:1.35;display:block;margin-top:2px}
+
+/* operators strip */
+.ops{display:flex;align-items:center;justify-content:center;gap:clamp(24px,6vw,72px);flex-wrap:wrap;padding-block:8px 24px}
+.ops span{font:800 clamp(1.3rem,2.6vw,1.8rem) var(--head);color:#9AA9A1;letter-spacing:-.03em}
+.ops-label{text-align:center;color:var(--muted);font-size:.95rem;margin-bottom:18px}
+
+/* three pillars */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pillar{background:var(--white);border-radius:var(--r);padding:32px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.pillar p{color:var(--muted)}
+.ill{height:150px;border-radius:16px;background:var(--mint-soft);margin-bottom:10px;position:relative;overflow:hidden;display:grid;place-items:center}
+.ill svg{width:78%;height:auto;max-height:130px}
+
+/* stats band */
+.band{background:var(--deep);color:var(--on-deep);border-radius:36px}
+.band-inner{padding:80px clamp(24px,5vw,72px)}
+.band h2{color:#fff}
+.band .sec-head p{color:var(--on-deep-muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.stat{border-top:1px solid #ffffff26;padding-top:22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.stat .n{font:800 clamp(1.9rem,3.6vw,3rem)/1 var(--head);color:var(--mint);letter-spacing:-.03em}
+.stat p{color:var(--on-deep-muted);font-size:.95rem}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:s}
+.step{background:var(--white);border-radius:var(--r);padding:30px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.step::before{counter-increment:s;content:counter(s);width:44px;height:44px;border-radius:50%;background:var(--deep);color:var(--mint);display:grid;place-items:center;font:800 1.1rem var(--head);margin-bottom:8px}
+.step p{color:var(--muted);font-size:.97rem}
+
+/* story */
+.story{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.story > *{min-width:0}
+.quote{background:var(--mint);border-radius:var(--r);padding:clamp(28px,4vw,48px);display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+.quote blockquote{margin:0;font:700 clamp(1.4rem,2.6vw,2rem)/1.2 var(--head);letter-spacing:-.02em;color:var(--deep)}
+.quote .who{font-size:.95rem;color:var(--deep)}
+.facts{display:grid;gap:20px}
+.fact{background:var(--white);border-radius:var(--r);padding:28px 32px;display:flex;flex-direction:column;gap:6px}
+.fact .n{font:800 clamp(1.7rem,3vw,2.3rem)/1.1 var(--head);letter-spacing:-.03em}
+.fact .n.r{color:var(--red)}
+.fact p{color:var(--muted)}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.rule{background:var(--white);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.rule .top{display:flex;justify-content:space-between;align-items:center}
+.rule .id{font:500 .78rem var(--mono);color:var(--muted)}
+.rule .count{font:700 .8rem var(--text);background:var(--amber-soft);color:#8A5D00;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.rule h3{font-size:1.08rem}
+.rule p{color:var(--muted);font-size:.92rem;line-height:1.5}
+.rules-note{margin-top:24px;color:var(--muted);max-width:72ch}
+
+/* product cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--white);border-radius:var(--r);padding:30px;display:flex;flex-direction:column;gap:12px;min-width:0;border:1.5px solid transparent;transition:border-color .2s}
+.card:hover{border-color:var(--mint)}
+.card p{color:var(--muted)}
+.card .more{margin-top:auto;padding-top:10px;font-weight:600;color:var(--mint-ink)}
+.soon{font:600 .72rem var(--text);background:var(--deep);color:var(--mint);padding:4px 10px;border-radius:999px;align-self:flex-start}
+.ico{width:48px;height:48px;border-radius:14px;background:var(--mint-soft);display:grid;place-items:center}
+.ico svg{width:24px;height:24px;stroke:var(--mint-ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* engineering */
+.eng{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.eng > *{min-width:0}
+.stack{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.stack span{border:1px solid #ffffff2e;border-radius:999px;padding:8px 14px;font-size:.9rem;color:var(--on-deep)}
+.princ{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:14px}
+.princ li{display:flex;gap:12px;color:var(--on-deep-muted)}
+.princ li::before{content:"";flex:none;width:20px;height:20px;border-radius:50%;background:var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%230B1F17' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;margin-top:3px}
+.princ b{color:#fff;font-weight:600}
+.perf{background:var(--deep2);border-radius:var(--r);padding:32px;display:grid;gap:22px}
+.perf h3{color:#fff}
+.pb .l{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;color:var(--on-deep-muted);margin-bottom:8px}
+.pb .l b{color:#fff;font-weight:600}
+.track{height:12px;border-radius:6px;background:#ffffff1a;overflow:hidden}
+.fill{height:100%;border-radius:6px;background:#6C8578}
+.fill.m{background:var(--mint)}
+.perf small{color:var(--on-deep-muted);font-size:.88rem}
+
+/* cta */
+.cta{background:var(--mint);border-radius:36px;padding:clamp(36px,6vw,80px);display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center}
+.cta > *{min-width:0}
+.cta h2{color:var(--deep)}
+.cta p{color:var(--deep);font-size:1.1rem;margin-top:18px;max-width:46ch}
+.mailbox{background:var(--white);border-radius:20px;padding:24px;display:grid;gap:14px}
+.mailbox .lbl{font-size:.85rem;color:var(--muted)}
+.mailrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.mailrow code{font:500 1rem var(--mono);user-select:all;overflow-wrap:anywhere;flex:1;min-width:0}
+.socials{display:flex;gap:18px;flex-wrap:wrap;padding-top:6px;border-top:1px solid var(--line)}
+.socials a{color:var(--ink);font-weight:600;text-decoration:none;padding-top:10px}
+.socials a:hover{color:var(--mint-ink)}
+
+footer{padding-block:56px 48px}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:28px}
+
+@media (max-width:1000px){
+  .rules{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:860px){
+  .hero,.story,.eng,.cta{grid-template-columns:1fr}
+  .pillars,.cards{grid-template-columns:1fr}
+  .links{display:none}
+  section{padding-block:72px}
+}
+@media (max-width:520px){
+  .rules,.steps,.stats{grid-template-columns:1fr}
+  .nav .pill{padding:10px 18px;font-size:.9rem}
+  .phone{transform:translateX(-20%)}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="#"><span class="logo"><i></i></span>Soldini</a>
+    <div class="links">
+      <a href="#produit">Produit</a>
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#fraude">Détection</a>
+      <a href="#technique">Technique</a>
+    </div>
+    <a class="pill dark" href="#contact">Demander une démo</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="kicker">Pour les agents mobile money indépendants</span>
+      <h1 style="margin-top:22px">Gardez le contrôle de <span>chaque point de service.</span></h1>
+      <p class="sub">Vous gérez plusieurs points et plusieurs opérateurs, mais vous ne voyez que ce que vos caissiers vous rapportent. Soldini rapproche chaque jour les relevés de vos opérateurs du comptage réel, signale les anomalies et vous donne une vue claire de votre argent.</p>
+      <div class="ctas">
+        <a class="pill mint" href="#contact">Analyser mes relevés <span class="arrow">→</span></a>
+        <a class="pill line" href="#fonctionnement">Comment ça marche</a>
+      </div>
+      <div class="trust"><b>Multi-opérateurs</b> · grand livre en partie double · contrôle quotidien</div>
+    </div>
+
+    <div class="stage" aria-label="Aperçu : application caissier et verdict du jour">
+      <div class="phone">
+        <span class="notch"></span>
+        <div class="ph-t">Comptage du soir</div>
+        <div class="ph-s">Point 1 · ce soir</div>
+        <div class="field on">Espèces <b class="num">400 000</b></div>
+        <div class="field">Float opérateur A <b class="num">250 000</b></div>
+        <div class="field">Float opérateur B <b class="num">120 000</b></div>
+        <div class="field">Float opérateur C <b>—</b></div>
+        <div class="ph-btn">Envoyer le comptage</div>
+        <div class="ph-note">Comptage à l'aveugle : le solde attendu n'est pas affiché</div>
+      </div>
+      <div class="float f1">
+        <div class="lbl">Verdict du jour</div>
+        <div class="v num">Manque 50 000</div>
+        <div class="bar" aria-hidden="true"><i></i><i></i><i class="a"></i><i></i><i></i><i class="r"></i><i></i><i></i><i class="a"></i><i class="r"></i></div>
+      </div>
+      <div class="float f2">
+        <span class="dot">!</span>
+        <div><b>Dépôt après réassort</b><span>Gros dépôt vers un même bénéficiaire, peu après un réassort</span></div>
+      </div>
+    </div>
+  </header>
+
+  <p class="ops-label">Lit les relevés Excel de chaque opérateur, quel que soit le format</p>
+  <div class="ops"><span>Multi-opérateurs</span><span>Multi-points</span><span>Multi-formats</span></div>
+</div>
+
+<section id="produit">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="kicker">Le produit</span>
+      <h2>Tout votre réseau, contrôlé à distance</h2>
+      <p>Trois choses que le propriétaire ne pouvait pas faire seul, et que Soldini fait tous les jours.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="ill"><svg viewBox="0 0 240 120" aria-hidden="true"><rect x="14" y="18" width="92" height="84" rx="12" fill="#fff"/><rect x="134" y="18" width="92" height="84" rx="12" fill="#fff"/><rect x="28" y="36" width="56" height="8" rx="4" fill="#0B1F17"/><rect x="28" y="54" width="40" height="6" rx="3" fill="#9AA9A1"/><rect x="28" y="68" width="48" height="6" rx="3" fill="#9AA9A1"/><rect x="148" y="36" width="56" height="8" rx="4" fill="#0B1F17"/><rect x="148" y="54" width="40" height="6" rx="3" fill="#9AA9A1"/><rect x="148" y="68" width="48" height="6" rx="3" fill="#9AA9A1"/><circle cx="120" cy="60" r="16" fill="#0B1F17"/><path d="M112 60l6 6 10-12" fill="none" stroke="#3DDC97" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Rapprocher</h3>
+        <p>Espèces, float par opérateur et capital comparés chaque jour à ce que les relevés disent qu'il devrait y avoir.</p>
+      </div>
+      <div class="pillar">
+        <div class="ill"><svg viewBox="0 0 240 120" aria-hidden="true"><rect x="20" y="20" width="200" height="80" rx="12" fill="#fff"/><g fill="#C9D5CE"><rect x="36" y="64" width="14" height="22" rx="3"/><rect x="58" y="52" width="14" height="34" rx="3"/><rect x="80" y="58" width="14" height="28" rx="3"/><rect x="124" y="60" width="14" height="26" rx="3"/><rect x="146" y="48" width="14" height="38" rx="3"/><rect x="190" y="56" width="14" height="30" rx="3"/></g><rect x="102" y="32" width="14" height="54" rx="3" fill="#D9452B"/><rect x="168" y="38" width="14" height="48" rx="3" fill="#C98A0B"/><circle cx="109" cy="22" r="10" fill="#D9452B"/><rect x="107.5" y="16" width="3" height="8" rx="1.5" fill="#fff"/><circle cx="109" cy="27" r="1.6" fill="#fff"/></svg></div>
+        <h3>Détecter</h3>
+        <p>Huit règles tirées de détournements réels, appliquées à chaque import, sur tous les points et tous les opérateurs.</p>
+      </div>
+      <div class="pillar">
+        <div class="ill"><svg viewBox="0 0 240 120" aria-hidden="true"><rect x="20" y="14" width="200" height="92" rx="12" fill="#fff"/><path d="M20 70 Q70 50 110 72 T220 60" fill="none" stroke="#E1E7E2" stroke-width="10"/><path d="M90 14 Q100 60 80 106" fill="none" stroke="#E1E7E2" stroke-width="8"/><circle cx="60" cy="44" r="9" fill="#3DDC97" stroke="#0B1F17" stroke-width="3"/><circle cx="130" cy="38" r="9" fill="#3DDC97" stroke="#0B1F17" stroke-width="3"/><circle cx="168" cy="82" r="9" fill="#D9452B" stroke="#0B1F17" stroke-width="3"/><circle cx="196" cy="40" r="9" fill="#C98A0B" stroke="#0B1F17" stroke-width="3"/><circle cx="108" cy="88" r="9" fill="#3DDC97" stroke="#0B1F17" stroke-width="3"/></svg></div>
+        <h3>Localiser</h3>
+        <p>Une carte où chaque point prend la couleur de son état du jour : juste, écart, alerte ou données manquantes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="band">
+    <div class="band-inner">
+      <div class="sec-head">
+        <h2>Construit pour des volumes de production</h2>
+        <p>Rapide, exact au centime et vérifié par des centaines de tests automatiques.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="n num">8</span><p>règles de détection, toutes explicables</p></div>
+        <div class="stat"><span class="n num">13 s</span><p>pour analyser 365 000 opérations</p></div>
+        <div class="stat"><span class="n num">900+</span><p>tests automatiques à chaque modification</p></div>
+        <div class="stat"><span class="n num">1</span><p>verdict par point et par jour</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="fonctionnement">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Fonctionnement</span>
+      <h2>Du relevé Excel au verdict du soir</h2>
+      <p>Vous déposez vos relevés. Le reste est automatique, et chaque chiffre renvoie à la ligne qui le justifie.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Importer</h3><p>Le format de chaque opérateur est reconnu automatiquement. Les lignes anormales sont signalées, pas ignorées.</p></div>
+      <div class="step"><h3>Passer au grand livre</h3><p>Espèces, float, commissions et capital en partie double. Aucune écriture n'est jamais modifiée.</p></div>
+      <div class="step"><h3>Rapprocher</h3><p>Le comptage du caissier est comparé à l'attendu. Tout écart ouvre un dossier.</p></div>
+      <div class="step"><h3>Agir</h3><p>Alertes expliquées, opérations en cause, décision et notes conservées.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="story">
+      <div class="quote">
+        <blockquote>Un agent indépendant confie son capital à des caissiers, sur plusieurs points et plusieurs opérateurs. Sans contrôle quotidien, un écart peut grandir pendant des mois sans être vu.</blockquote>
+        <div class="who">Le problème</div>
+      </div>
+      <div class="facts">
+        <div class="fact"><span class="n r">Aucun solde</span><p>dans la plupart des relevés : le propriétaire dépend du décompte du caissier.</p></div>
+        <div class="fact"><span class="n r">Plusieurs opérateurs</span><p>pour une seule caisse : l'argent passe de l'un à l'autre sans vue d'ensemble.</p></div>
+        <div class="fact"><span class="n">Chaque soir</span><p>un verdict par point, au lieu d'un écart découvert trop tard.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fraude" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Détection de fraude</span>
+      <h2>Huit règles, toutes explicables</h2>
+      <p>Chaque alerte dit en clair pourquoi elle s'est déclenchée et s'ouvre sur les opérations en cause.</p>
+    </div>
+    <div class="rules">
+      <div class="rule"><div class="top"><span class="id">R1</span></div><h3>Bénéficiaire à sens unique</h3><p>Un numéro reçoit des dépôts répétés et ne retire jamais.</p></div>
+      <div class="rule"><div class="top"><span class="id">R2</span></div><h3>Dépôt après réassort</h3><p>Gros dépôt dans les 3 heures qui suivent un envoi de float.</p></div>
+      <div class="rule"><div class="top"><span class="id">R3</span></div><h3>Montants non ronds</h3><p>Gros dépôts répétés vers un même numéro, jamais arrondis.</p></div>
+      <div class="rule"><div class="top"><span class="id">R4</span></div><h3>Numéro du personnel</h3><p>Opération sur le numéro personnel d'un employé, tous opérateurs.</p></div>
+      <div class="rule"><div class="top"><span class="id">R5</span></div><h3>Retrait par le caissier</h3><p>Le caissier retire des espèces à son propre point.</p></div>
+      <div class="rule"><div class="top"><span class="id">R6</span></div><h3>Commissions non reversées</h3><p>Reversement incomplet plusieurs jours de suite.</p></div>
+      <div class="rule"><div class="top"><span class="id">R7</span></div><h3>Transit dans le réseau</h3><p>L'argent entre sur un numéro et en ressort le même jour.</p></div>
+      <div class="rule"><div class="top"><span class="id">R8</span></div><h3>Doublons rapides</h3><p>Même client, même montant, moins de 10 minutes d'écart.</p></div>
+    </div>
+    <p class="rules-note">Les seuils se règlent par réseau. L'IA viendra proposer des pistes, mais l'humain décide toujours.</p>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Fonctionnalités</span>
+      <h2>Fait pour les propriétaires de points</h2>
+    </div>
+    <div class="cards">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><h3>Carte des points</h3><p>L'état de chaque point en un coup d'œil, avec le détail du jour au clic.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><h3>Vue financière</h3><p>Capital confié, argent détenu, commissions et bénéfice, par point et sur le réseau.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span><h3>Multi-opérateurs</h3><p>Une seule caisse par point et un float par opérateur, côte à côte.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg></span><h3>Dossiers d'enquête</h3><p>Alertes regroupées par employé et par numéro, avec notes et décisions horodatées.</p></div>
+      <div class="card"><span class="soon">Bientôt</span><h3>Application caissier</h3><p>Comptage à l'aveugle le soir sur téléphone, iPhone ou Android, même hors connexion.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg></span><h3>Imports multi-formats</h3><p>Chaque opérateur a son format Excel. Soldini les reconnaît et les ramène à un seul modèle.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" id="technique">
+  <div class="band">
+    <div class="band-inner">
+      <div class="eng">
+        <div>
+          <div class="sec-head" style="margin-bottom:24px">
+            <h2>Conçu comme un système financier</h2>
+            <p>Architecture, spécifications et code par Ahmed Taleb Bechir, en développement piloté par les spécifications avec Spec Kit et des agents Claude Code.</p>
+          </div>
+          <div class="stack"><span>Python 3.12</span><span>FastAPI</span><span>SQLAlchemy 2</span><span>PostgreSQL 16</span><span>PostGIS</span><span>Next.js</span><span>TypeScript</span><span>MapLibre GL</span><span>Docker</span><span>Caddy</span><span>GCP</span></div>
+          <ul class="princ">
+            <li><span><b>Grand livre en ajout seul.</b> Aucune écriture ne peut être modifiée ni supprimée, même en base.</span></li>
+            <li><span><b>Multi-locataire.</b> Chaque réseau est isolé par la base de données elle-même (row-level security).</span></li>
+            <li><span><b>Montants exacts.</b> Jamais de virgule flottante pour l'argent.</span></li>
+            <li><span><b>900+ tests automatiques</b>, dont des tests de bout en bout.</span></li>
+          </ul>
+        </div>
+        <div class="perf">
+          <h3>Optimisation des performances</h3>
+          <div class="pb"><div class="l"><span>Détection, 365 000 opérations · avant</span><b>260–439 s</b></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+          <div class="pb"><div class="l"><span>Après</span><b>13 s</b></div><div class="track"><div class="fill m" style="width:3%"></div></div></div>
+          <div class="pb"><div class="l"><span>Suite de tests complète · avant</span><b>36 min</b></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+          <div class="pb"><div class="l"><span>Après</span><b>3,6 min</b></div><div class="track"><div class="fill m" style="width:10%"></div></div></div>
+          <small>Profilage, preuves stockées réduites par alerte, image de base native et écritures en masse.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h2>Envoyez deux mois de relevés.</h2>
+        <p>Vous recevez l'analyse de votre réseau, les écarts et les alertes, avant tout engagement.</p>
+      </div>
+      <div class="mailbox">
+        <span class="lbl">Écrivez-moi</span>
+        <div class="mailrow"><code id="email">talebbechir123@gmail.com</code><button class="pill dark" id="copy" type="button" style="padding:10px 18px">Copier</button></div>
+        <div class="socials">
+          <a href="https://atbechir.com" target="_blank" rel="noopener">atbechir.com ↗</a>
+          <a href="https://www.linkedin.com/in/ahmed-taleb-bechir-97a7301a4" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="https://atalebbechir.substack.com" target="_blank" rel="noopener">Substack ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot"><span>Soldini</span><span>Exemples présentés sans numéros de clients ni noms.</span></div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('copy').addEventListener('click', function(){
+  var b=this, el=document.getElementById('email'), t=el.textContent;
+  function done(){b.textContent='Copié';setTimeout(function(){b.textContent='Copier'},1600)}
+  function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+  try{navigator.clipboard.writeText(t).then(done,sel)}catch(e){sel()}
+});
+</script>
+</body>
+</html>
